@@ -1,17 +1,38 @@
 package org.catapano;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import org.catapano.excelbatcher.ExcelBatchOptions;
+import org.catapano.excelbatcher.SheetBatchHandler;
+import org.catapano.handler.DatiContrattoHandler;
+import org.catapano.handler.DispatchingSheetBatchHandler;
+import org.catapano.handler.SheetHandlerRegistry;
+import org.catapano.handler.UnknownSheetLoggingHandler;
+import org.catapano.poi.XlsxSaxBatchReader;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        var reader = new XlsxSaxBatchReader();
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        var options = new ExcelBatchOptions(
+                200,   // batchSize: quante righe per batch
+                false, // includeHeaderRow: includere la prima riga?
+                true   // trimStrings: trim sulle stringhe
+        );
+
+        SheetHandlerRegistry registry = new SheetHandlerRegistry()
+                .on(name -> name.endsWith("datiContratto.xml"), DatiContrattoHandler::new)
+                .fallback(UnknownSheetLoggingHandler::new);
+
+        SheetBatchHandler facade = new DispatchingSheetBatchHandler(registry);
+        try (InputStream is = Files.newInputStream(Path.of("input.xlsx"))) {
+            reader.readXlsx(is, options, facade);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
     }
 }
