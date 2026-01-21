@@ -10,8 +10,8 @@ import java.util.Optional;
 public final class CellParsers {
     private CellParsers() {}
 
-    public static Optional<Long> parseLong(Optional<String> s) {
-        return s
+    public static Optional<Long> parseLong(String s) {
+        return Optional.ofNullable(s)
                 .map(String::trim)
                 .filter(str -> !str.isBlank())
                 .flatMap(str -> {
@@ -24,9 +24,8 @@ public final class CellParsers {
 
     }
 
-    public static Optional<Integer> parseInt(Optional<String> s) {
-        if (s.isEmpty()) return Optional.empty();
-        return s
+    public static Optional<Integer> parseInt(String s) {
+        return Optional.ofNullable(s)
                 .map(String::trim)
                 .filter(str -> !str.isBlank())
                 .flatMap(str -> {
@@ -38,9 +37,9 @@ public final class CellParsers {
                 });
     }
 
-    public static Optional<BigDecimal> parseBigDecimal(Optional<String> s) {
+    public static Optional<BigDecimal> parseBigDecimal(String s) {
 
-        return s
+        return Optional.ofNullable(s)
                 .map(String::trim)
                 .filter(str -> !str.isBlank())
                 .flatMap(str -> {
@@ -52,8 +51,8 @@ public final class CellParsers {
                 });
     }
 
-    public static Optional<LocalDate> parseDate(Optional<String> s, DateTimeFormatter formatter) {
-        return s
+    public static Optional<LocalDate> parseDate(String s, DateTimeFormatter formatter) {
+        return Optional.ofNullable(s)
                 .map(String::trim)
                 .filter(str -> !str.isBlank())
                 .flatMap(str -> {
@@ -66,8 +65,8 @@ public final class CellParsers {
     }
 
 
-    public static java.util.Optional<Boolean> parseBoolean(Optional<String> s) {
-        return s
+    public static java.util.Optional<Boolean> parseBoolean(String s) {
+        return Optional.ofNullable(s)
                 .map(String::trim)
                 .filter(str -> !str.isBlank())
                 .map(str -> str.toLowerCase(java.util.Locale.ROOT))
