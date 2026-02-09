@@ -27,13 +27,7 @@ public class CustomRowMapper implements SheetRowMapper<MyCustomModel>{
         this.COL_ACTIVE = active;
         this.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE; // adattare se necessario
     }
-    private Optional<String> cell(List<String> cells, int idx) {
-        return Optional.ofNullable(cells)
-                .filter(c -> idx >= 0 && idx < c.size())
-                .map(c -> c.get(idx))
-                .map(s -> s == null ? null : s.trim())
-                .filter(s -> !s.isEmpty());
-    }
+
     @Override
     public MyCustomModel map(BatchRow row) {
         List<String> cells = row.cells();
