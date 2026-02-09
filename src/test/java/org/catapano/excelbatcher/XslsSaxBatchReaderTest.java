@@ -20,22 +20,24 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class XslsSaxBatchReaderTest {
 
     @Test
-    public void test() {
+    public void whenReadFirstLineShouldMappingCorrectly() {
 
         var reader = new XlsxSaxBatchReader();
 
         var options = new ExcelBatchOptions(
-                200,   // batchSize: quante righe per batch
-                false, // includeHeaderRow: includere la prima riga?
-                true   // trimStrings: trim sulle stringhe
+                200,   // batchSize: number of rows for batch
+                false, // includeHeaderRow: includes first row?
+                true   // trimStrings: trim on strings
         );
+
+        //this represents the batches of mapped DTOs produced by CustomHandler.onBatch
         List<List<MyCustomModel>> capturedBatches = new ArrayList<>();
         // Capture what CustomHandler produces (each batch of mapped DTOs)
         var customHandlerSupplier = (java.util.function.Supplier<SheetBatchHandler>) () ->
                 new CustomHandler(capturedBatches::add);
 
         SheetHandlerRegistry registry = new SheetHandlerRegistry()
-                .on(name -> name.endsWith("datiContratto"), DatiContrattoHandler::new)
+                //.on(name -> name.endsWith("datiContratto"), DatiContrattoHandler::new)
                 .on(name -> name.endsWith("custom"), customHandlerSupplier)
                 .fallback(UnknownSheetLoggingHandler::new);
 
@@ -55,12 +57,15 @@ public class XslsSaxBatchReaderTest {
 
             // Basic verification: CustomHandler.onBatch was invoked and produced at least one batch
             assertFalse(capturedBatches.isEmpty(), "Expected at least one batch from CustomHandler");
-            assertFalse(capturedBatches.getFirst().isEmpty(), "Expected at least one mapped row in the first batch");
-            assertThat(capturedBatches.getFirst().getFirst().getAmount()).isEqualTo(BigDecimal.valueOf(125));
-            assertThat(capturedBatches.getFirst().getFirst().getDate()).isEqualTo(LocalDate.of(2025,10,28));
-            assertThat(capturedBatches.getFirst().getFirst().isActive()).isFalse();
-            assertThat(capturedBatches.getFirst().getFirst().getQuantity()).isEqualTo(13);
-            assertThat(capturedBatches.getFirst().getFirst().getName()).isEqualTo("Jose");
+            // getFirst on capturedBatches give u the firstBatch round of batch
+            List<MyCustomModel> firstBatch = capturedBatches.getFirst();
+            assertFalse(firstBatch.isEmpty(), "Expected at least one mapped row in the firstBatch batch");
+            // this gives u the first row of the first batch of mapped DTOs produced by CustomHandler.onBatchq
+            assertThat(firstBatch.getFirst().getAmount()).isEqualTo(BigDecimal.valueOf(125));
+            assertThat(firstBatch.getFirst().getDate()).isEqualTo(LocalDate.of(2025,10,28));
+            assertThat(firstBatch.getFirst().isActive()).isFalse();
+            assertThat(firstBatch.getFirst().getQuantity()).isEqualTo(13);
+            assertThat(firstBatch.getFirst().getName()).isEqualTo("Jose");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
