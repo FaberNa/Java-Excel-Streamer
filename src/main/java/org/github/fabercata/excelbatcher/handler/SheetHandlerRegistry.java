@@ -1,10 +1,15 @@
 package org.github.fabercata.excelbatcher.handler;
 
 import org.github.fabercata.excelbatcher.config.BatchRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public final class SheetHandlerRegistry {
+
+    private static final Logger log = LoggerFactory.getLogger(SheetHandlerRegistry.class);
+
 
     private final java.util.List<Rule> rules = new java.util.ArrayList<>();
     private SheetBatchHandler fallback = new SheetBatchHandler() {
@@ -16,6 +21,7 @@ public final class SheetHandlerRegistry {
 
     public SheetHandlerRegistry on(java.util.function.Predicate<String> sheetMatcher,
                                    java.util.function.Supplier<SheetBatchHandler> handlerSupplier) {
+        log.debug("Registering handler for sheets matching: {}", sheetMatcher);
         rules.add(new Rule(sheetMatcher, handlerSupplier));
         return this;
     }

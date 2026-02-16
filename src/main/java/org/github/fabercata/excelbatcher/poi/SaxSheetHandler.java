@@ -9,12 +9,17 @@ import org.apache.poi.xssf.model.Styles;
 import org.github.fabercata.excelbatcher.config.BatchRow;
 import org.github.fabercata.excelbatcher.config.ExcelBatchOptions;
 import org.github.fabercata.excelbatcher.handler.SheetBatchHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 class SaxSheetHandler extends DefaultHandler implements XSSFSheetXMLHandler.SheetContentsHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(SaxSheetHandler.class);
+
 
     private final String sheetName;
     private final ExcelBatchOptions options;
@@ -80,6 +85,7 @@ class SaxSheetHandler extends DefaultHandler implements XSSFSheetXMLHandler.Shee
 
     @Override
     public void startRow(int rowNum) {
+        log.debug("{} startRow {}", sheetName, rowNum);
         currentRow = rowNum;
         currentCol = -1;
         currentCells = new ArrayList<>();
@@ -87,6 +93,7 @@ class SaxSheetHandler extends DefaultHandler implements XSSFSheetXMLHandler.Shee
 
     @Override
     public void endRow(int rowNum) {
+        log.debug("{} endRow {}", sheetName, rowNum);
         if (!options.includeHeaderRow() && !headerSkipped) {
             headerSkipped = true;
             return;
@@ -109,14 +116,12 @@ class SaxSheetHandler extends DefaultHandler implements XSSFSheetXMLHandler.Shee
 
     @Override
     public void cell(String cellReference, String formattedValue, org.apache.poi.xssf.usermodel.XSSFComment comment) {
-        // SEMPLIFICAZIONE: aggiungiamo i valori in ordine di arrivo.
-        // Per gestione colonne mancanti (salti) si può mappare "A1"->colIndex e riempire vuoti.
+        // Adding calue same order of columns, but cellReference can be "A1", "C1" (missing B) so we need to track current column index.
         int thisCol = new CellReference(cellReference).getCol();
-        // riempi colonne mancanti
+        // fill empty columns
         for (int i = currentCol + 1; i < thisCol; i++) {
             currentCells.add(""); // oppure null
         }
-
         currentCells.add(formattedValue);
         currentCol = thisCol;
     }
@@ -124,6 +129,7 @@ class SaxSheetHandler extends DefaultHandler implements XSSFSheetXMLHandler.Shee
     @Override
     public void headerFooter(String text, boolean isHeader, String tagName) {
         // ignore
+        log.debug("{} headerFooter {}", sheetName, tagName);
     }
 
     void flush(long lastRowIndex) {

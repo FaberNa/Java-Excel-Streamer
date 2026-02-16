@@ -2,11 +2,15 @@ package org.github.fabercata.excelbatcher.handler;
 
 import org.github.fabercata.excelbatcher.config.BatchRow;
 import org.github.fabercata.excelbatcher.model.MyCustomModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class CustomHandler  implements SheetBatchHandler{
+
+    private static final Logger log = LoggerFactory.getLogger(CustomHandler.class);
 
     private final Consumer<List<MyCustomModel>> out;
     public CustomHandler(Consumer<List<MyCustomModel>> out) { this.out = out; }
@@ -20,12 +24,12 @@ public class CustomHandler  implements SheetBatchHandler{
 
     @Override
     public void onBatch(String sheetName, long sheetRowStart, long sheetRowEnd, List<BatchRow> rows) {
-        // mappo ciascuna BatchRow in MyCustomModel
+        log.debug("{} onBatch rows: {}", sheetName, rows.size());
+        // mapping each ciascuna BatchRow in MyCustomModel
         List<MyCustomModel> dtos = rows.stream()
                 .map(mapper::map)
                 .toList();
 
-        dtos.stream().limit(5).forEach(dc -> System.out.println("  dto=" + dc));
         out.accept(dtos);
     }
 

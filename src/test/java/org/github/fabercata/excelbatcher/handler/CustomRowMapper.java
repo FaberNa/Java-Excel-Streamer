@@ -3,6 +3,8 @@ package org.github.fabercata.excelbatcher.handler;
 import org.github.fabercata.excelbatcher.config.BatchRow;
 import org.github.fabercata.excelbatcher.model.MyCustomModel;
 import org.github.fabercata.excelbatcher.util.CellParsers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,7 +19,7 @@ public class CustomRowMapper implements SheetRowMapper<MyCustomModel>{
     private final int COL_NAME;
     private final int COL_ACTIVE;
     private final DateTimeFormatter dateFormatter;
-
+    private static final Logger log = LoggerFactory.getLogger(CustomRowMapper.class);
 
     public CustomRowMapper(int date, int amount, int quantity, int active,int name) {
         this.COL_DATE = date;
@@ -30,6 +32,7 @@ public class CustomRowMapper implements SheetRowMapper<MyCustomModel>{
 
     @Override
     public MyCustomModel map(BatchRow row) {
+        log.debug("Mapping row {} cells={}", row.rowIndex(), row.cells());
         List<String> cells = row.cells();
 
         Optional<LocalDate> date =
