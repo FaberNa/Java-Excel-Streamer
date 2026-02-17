@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/github/FaberNa/Java-Excel-Streamer/graph/badge.svg?token=FS6PESV0XV)](https://codecov.io/github/FaberNa/Java-Excel-Streamer)
+
 # Java Excel Streamer
 
 Purpose
