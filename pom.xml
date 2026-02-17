@@ -16,10 +16,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <poi.version>5.5.1</poi.version>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
-        <assertj.version>3.27.7</assertj.version>
+        <assertj.version>4.0.0-M1</assertj.version>
         <log4j-to-slf4j.version>2.24.3</log4j-to-slf4j.version>
         <logback-classic.version>1.5.31</logback-classic.version>
         <jacoco.version>0.8.14</jacoco.version>
+        <mockito-core.version>5.21.0</mockito-core.version>
     </properties>
 
     <dependencies>
@@ -57,6 +58,13 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback-classic.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito-core.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -82,6 +90,12 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                        <excludes>
+                        <!-- Esclude intero package -->
+                        <exclude>org/github/fabercata/excelbatcher/config/**</exclude>
+                        </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
