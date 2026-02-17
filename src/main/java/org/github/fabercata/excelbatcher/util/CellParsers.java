@@ -71,7 +71,7 @@ public final class CellParsers {
                 .filter(str -> !str.isBlank())
                 .map(str -> str.toLowerCase(java.util.Locale.ROOT))
                 .flatMap(str -> java.util.stream.Stream.of(
-                                        java.util.Map.entry(java.util.Set.of("y", "yes", "true", "1",1,"S","SI","s"), Boolean.TRUE),
+                                        java.util.Map.entry(java.util.Set.of("y", "yes", "true", "1",1,"S","SI","s","si"), Boolean.TRUE),
                                         java.util.Map.entry(java.util.Set.of("n", "no", "false", "0",0,"N","NO"), Boolean.FALSE)
                                 )
                                 .filter(entry -> entry.getKey().contains(str))

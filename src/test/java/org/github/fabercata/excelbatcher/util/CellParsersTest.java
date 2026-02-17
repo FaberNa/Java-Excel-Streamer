@@ -3,11 +3,97 @@ package org.github.fabercata.excelbatcher.util;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CellParsersTest {
+
+
+    // ---------- parseDate ----------
+
+    @Test
+    void parseDate_shouldReturnEmpty_whenNullOrBlank() {
+        var fmt = DateTimeFormatter.ISO_LOCAL_DATE;
+        assertThat(CellParsers.parseDate(null, fmt)).isEmpty();
+        assertThat(CellParsers.parseDate("", fmt)).isEmpty();
+        assertThat(CellParsers.parseDate("   ", fmt)).isEmpty();
+    }
+
+    @Test
+    void parseDate_shouldParseTrimmedDate_withGivenFormatter() {
+        var fmt = DateTimeFormatter.ISO_LOCAL_DATE;
+
+        assertThat(CellParsers.parseDate(" 2026-02-16 ", fmt))
+                .contains(LocalDate.of(2026, 2, 16));
+    }
+
+    @Test
+    void parseDate_shouldReturnEmpty_whenInvalidForFormatter() {
+        var fmt = DateTimeFormatter.ISO_LOCAL_DATE;
+
+        assertThat(CellParsers.parseDate("16/02/2026", fmt)).isEmpty();
+        assertThat(CellParsers.parseDate("not-a-date", fmt)).isEmpty();
+    }
+
+    // ---------- parseBoolean ----------
+
+    @Test
+    void parseBoolean_shouldReturnEmpty_whenNullOrBlank() {
+        assertThat(CellParsers.parseBoolean(null)).isEmpty();
+        assertThat(CellParsers.parseBoolean("")).isEmpty();
+        assertThat(CellParsers.parseBoolean("   ")).isEmpty();
+    }
+
+    @Test
+    void parseBoolean_shouldParseTrueValues_caseInsensitive() {
+        assertThat(CellParsers.parseBoolean("true")).contains(true);
+        assertThat(CellParsers.parseBoolean("YES")).contains(true);
+        assertThat(CellParsers.parseBoolean(" y ")).contains(true);
+        assertThat(CellParsers.parseBoolean("1")).contains(true);
+        assertThat(CellParsers.parseBoolean("si")).contains(true);
+        assertThat(CellParsers.parseBoolean("S")).contains(true);
+    }
+
+    @Test
+    void parseBoolean_shouldParseFalseValues_caseInsensitive() {
+        assertThat(CellParsers.parseBoolean("false")).contains(false);
+        assertThat(CellParsers.parseBoolean("NO")).contains(false);
+        assertThat(CellParsers.parseBoolean(" n ")).contains(false);
+        assertThat(CellParsers.parseBoolean("0")).contains(false);
+    }
+
+    @Test
+    void parseBoolean_shouldReturnEmpty_whenUnknownToken() {
+        assertThat(CellParsers.parseBoolean("maybe")).isEmpty();
+        assertThat(CellParsers.parseBoolean("2")).isEmpty();
+        assertThat(CellParsers.parseBoolean("ok")).isEmpty();
+    }
+    // ---------- parseBigDecimal ----------
+
+    @Test
+    void parseBigDecimal_shouldReturnEmpty_whenNullOrBlank() {
+        assertThat(CellParsers.parseBigDecimal(null)).isEmpty();
+        assertThat(CellParsers.parseBigDecimal("")).isEmpty();
+        assertThat(CellParsers.parseBigDecimal("   ")).isEmpty();
+    }
+
+    @Test
+    void parseBigDecimal_shouldParseTrimmedDecimal() {
+        assertThat(CellParsers.parseBigDecimal("  12.30 ")).contains(new BigDecimal("12.30"));
+        assertThat(CellParsers.parseBigDecimal("-0.01")).contains(new BigDecimal("-0.01"));
+        assertThat(CellParsers.parseBigDecimal("1E3")).contains(new BigDecimal("1E3"));
+    }
+
+    @Test
+    void parseBigDecimal_shouldReturnEmpty_whenInvalid() {
+        assertThat(CellParsers.parseBigDecimal("12,30")).isEmpty(); // virgola non valida per BigDecimal default
+        assertThat(CellParsers.parseBigDecimal("abc")).isEmpty();
+    }
 
     @Test
     @DisplayName("null -> Optional.empty")
@@ -82,6 +168,29 @@ class CellParsersTest {
         // Integer.MAX_VALUE = 2147483647
         assertTrue(CellParsers.parseInt("2147483648").isEmpty());
     }
+
+    // ---------- parseLong ----------
+
+    @Test
+    void parseLong_shouldReturnEmpty_whenNullOrBlank() {
+        assertThat(CellParsers.parseLong(null)).isEmpty();
+        assertThat(CellParsers.parseLong("")).isEmpty();
+        assertThat(CellParsers.parseLong("   ")).isEmpty();
+    }
+
+    @Test
+    void parseLong_shouldParseTrimmedLong() {
+        assertThat(CellParsers.parseLong("  123  ")).contains(123L);
+        assertThat(CellParsers.parseLong("0")).contains(0L);
+        assertThat(CellParsers.parseLong("-7")).contains(-7L);
+    }
+
+    @Test
+    void parseLong_shouldReturnEmpty_whenInvalid() {
+        assertThat(CellParsers.parseLong("12.3")).isEmpty();
+        assertThat(CellParsers.parseLong("abc")).isEmpty();
+    }
+
 
     @Test
     @DisplayName("underflow (< Integer.MIN_VALUE) -> Optional.empty")
