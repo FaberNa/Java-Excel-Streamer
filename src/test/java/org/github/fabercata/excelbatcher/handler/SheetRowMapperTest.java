@@ -8,7 +8,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class SheetRowMapperTest {
 
-
     private static SheetRowMapper<Object> mapper() {
         return new SheetRowMapper<>() {
             @Override
