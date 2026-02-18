@@ -45,9 +45,14 @@ and forwards the result to your business logic.
 You can map your BatchRow to your domain model and then, for example, save it to a database, send it to another service, or perform any other processing.
 
 
-One sheet → One Model
-One sheet → One RowMapper
-One sheet → One Handler
+### Design Principle
+
+- **One sheet → One Model**
+- **One sheet → One RowMapper**
+- **One sheet → One Handler**
+
+Each Excel sheet should have its own mapping and behavior layer.
+This keeps the library generic and your domain logic clean, explicit, and testable.
 
 
 ## Easy example (from the test case)
