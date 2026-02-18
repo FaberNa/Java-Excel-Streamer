@@ -1,5 +1,4 @@
-[![codecov](https://codecov.io/github/FaberNa/Java-Excel-Streamer/graph/badge.svg?token=FS6PESV0XV)](https://codecov.io/github/FaberNa/Java-Excel-Streamer)
-
+[![codecov](https://codecov.io/github/FaberNa/Java-Excel-Streamer/graph/badge.svg?token=FS6PESV0XV)](https://codecov.io/github/FaberNa/Java-Excel-Streamer) [![Maven Central](https://img.shields.io/maven-central/v/io.github.faberna/java-excel-streamer.svg)](https://central.sonatype.com/artifact/io.github.faberna/java-excel-streamer) ![Java](https://img.shields.io/badge/Java-25-blue)
 # Java Excel Streamer
 
 Purpose
