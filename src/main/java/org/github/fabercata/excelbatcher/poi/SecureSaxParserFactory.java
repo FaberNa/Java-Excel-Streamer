@@ -9,11 +9,17 @@ import javax.xml.parsers.SAXParserFactory;
 /**
  * Factory for creating secure SAX parsers.
  */
-final class SecureSaxParserFactory {
+final class SecureSaxParserFactory implements XmlReaderProvider {
 
     private static final SAXParserFactory FACTORY = createFactory();
 
     private SecureSaxParserFactory() {}
+
+
+    @Override
+    public XMLReader create() {
+        return SecureSaxParserFactory.newXmlReader();
+    }
 
     static XMLReader newXmlReader() {
         try {

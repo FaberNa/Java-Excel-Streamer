@@ -14,9 +14,22 @@ import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 
 import java.io.InputStream;
+import java.util.function.Supplier;
 
 public class XlsxSaxBatchReader implements ExcelBatchReader {
     private static final Logger log = LoggerFactory.getLogger(XlsxSaxBatchReader.class);
+
+
+    private final Supplier<XMLReader> xmlReaderSupplier;
+
+    public XlsxSaxBatchReader() {
+        this(SecureSaxParserFactory::newXmlReader);
+    }
+
+    XlsxSaxBatchReader(Supplier<XMLReader> xmlReaderSupplier) {
+        this.xmlReaderSupplier = xmlReaderSupplier;
+    }
+
 
     @Override
     public void readXlsx(InputStream xlsx, ExcelBatchOptions options, SheetBatchHandler handler) {
@@ -35,7 +48,7 @@ public class XlsxSaxBatchReader implements ExcelBatchReader {
                     //get sheet name
                     String sheetPartName = sheets.getSheetName();
 
-                    XMLReader parser = SecureSaxParserFactory.newXmlReader();
+                    XMLReader parser = xmlReaderSupplier.get();
 
                     SaxSheetHandler saxHandler = new SaxSheetHandler(sheetPartName, styles, sst, options, handler);
                     parser.setContentHandler(saxHandler);
